@@ -42,22 +42,52 @@ function getUser(userId) {
 
 exports.sendNotification = functions.firestore
   .document("Notifications/{id}")
-  .onCreate((snapshot, context) => {
-    const payload = {
+  .onCreate(async (snapshot, context) => {
+    // const payload = {
+    //   notification: {
+    //     title: `${snapshot.data().title}`,
+    //     body: `${snapshot.data().body}`,
+    //     icon: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
+    //     sound: "",
+    //   },
+    // };
+    const message = {
+      tokens: [snapshot.data().receiverToken],
       notification: {
         title: `${snapshot.data().title}`,
         body: `${snapshot.data().body}`,
-        icon: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
-        sound: "",
+        // icon: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
+        // sound: "",
+      },
+      apns: {
+        headers: {
+          "apns-priority": "10",
+        },
+        payload: {
+          aps: {
+            sound: "horn.wav",
+          },
+        },
+      },
+      ios: {
+        sound: "horn.wav",
+      },
+      android: {
+        priority: "high",
+        notification: {
+          channel_id: "sound_channel",
+          sound: "horn.wav",
+        },
       },
     };
 
-    return admin
+    return await admin
       .messaging()
-      .sendToDevice(snapshot.data().receiverToken, payload)
+      .sendEachForMulticast(message)
       .then((reponse) => {
-        return console.log(`A new notification for  =====`);
-      });
+        return logger.info(`A new notification for  =====`);
+      })
+      .catch((e) => logger.info("------ error:", e));
   });
 
 /* eslint-enable */
