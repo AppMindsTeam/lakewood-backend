@@ -52,7 +52,8 @@ exports.sendNotification = functions.firestore
     //   },
     // };
     const message = {
-      tokens: [snapshot.data().receiverToken],
+      // tokens: [snapshot.data().receiverToken],
+      tokens: snapshot.data().receiverToken,
       notification: {
         title: `${snapshot.data().title}`,
         body: `${snapshot.data().body}`,
