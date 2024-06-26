@@ -85,8 +85,8 @@ exports.sendNotification = functions.firestore
     return await admin
       .messaging()
       .sendEachForMulticast(message)
-      .then((reponse) => {
-        return logger.info(`A new notification for  =====`);
+      .then((response) => {
+        return logger.info(`A new notification for  =====`, response);
       })
       .catch((e) => logger.info("------ error:", e));
   });
