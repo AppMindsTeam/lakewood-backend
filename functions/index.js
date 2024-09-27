@@ -56,36 +56,37 @@ exports.syncNewProductToTypesense = functions.firestore
     }
   });
 
-// function getUser(userId) {
-//   // [START get_document]
-//   let userRef = db.collection("Users").doc(userId);
-//   let getDoc = userRef
-//     .get()
-//     .then((doc) => {
-//       if (!doc.exists) {
-//         console.log("No such document!");
-//         return 0;
-//       } else {
-//         console.log("Document data:", doc.data());
-//         return doc.data();
-//       }
-//     })
-//     .catch((err) => {
-//       console.log("Error getting document", err);
-//     });
-//   // [END get_document]
-//   return getDoc;
-// }
+async function getUser(userId) {
+  let userRef = db.collection('Users').doc(userId);
+  let getDoc = userRef
+    .get()
+    .then((doc) => {
+      if (!doc.exists) {
+        console.log('No such document!');
+        return 0;
+      } else {
+        console.log('Document data:', doc.data());
+        return doc.data();
+      }
+    })
+    .catch((err) => {
+      console.log('Error getting document', err);
+    });
+  // [END get_document]
+  return getDoc;
+}
 
 exports.sendNotification = functions.firestore
   .document('Notifications/{id}')
   .onCreate(async (snapshot, context) => {
+    const user = await getUser(snapshot.data().userId);
     let recipientDetails;
     if (snapshot.data().recipientId) {
       recipientDetails = {
         recipientId: snapshot.data().recipientId,
         productId: snapshot.data().productId,
         screen: 'ChatDetails',
+        badge: user.unreadNotifications || 0,
       };
     } else {
       recipientDetails = {};
@@ -110,6 +111,7 @@ exports.sendNotification = functions.firestore
         payload: {
           aps: {
             sound: 'horn.wav',
+            badge: user.unreadNotifications || 0,
           },
         },
       },
@@ -121,6 +123,7 @@ exports.sendNotification = functions.firestore
         notification: {
           channel_id: 'sound_channel',
           sound: 'horn.wav',
+          notification_count: 20,
         },
       },
     };
