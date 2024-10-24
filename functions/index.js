@@ -37,6 +37,7 @@ const client = new Typesense.Client({
 exports.syncNewProductToTypesense = functions.firestore
   .document("Products/{productId}")
   .onCreate(async (snap, context) => {
+    logger.info("Syncing new product to typesense>>>", snap.id);
     const newProduct = snap.data();
     const productId = context.params.productId;
 
@@ -51,11 +52,7 @@ exports.syncNewProductToTypesense = functions.firestore
           createdAt: newProduct.createdAt ? newProduct.createdAt.toDate() : "",
         });
 
-      await client
-        .collections("Products")
-        .documents(updatedBook.id)
-        .update(updatedBook);
-      logger.log(`Successfully added product ${productId} to Typesense`);
+      logger.info(`Successfully added product ${productId} to Typesense`);
     } catch (error) {
       logger.error(`Error adding product ${productId} to Typesense:`, error);
     }
@@ -65,7 +62,7 @@ exports.syncNewProductToTypesense = functions.firestore
 exports.syncUpdatedProductToTypesense = functions.firestore
   .document("Products/{productId}")
   .onUpdate(async (snap, context) => {
-    const updatedProduct = snap.data();
+    const updatedProduct = snap.after.data();
     const productId = context.params.productId;
 
     try {
@@ -81,9 +78,24 @@ exports.syncUpdatedProductToTypesense = functions.firestore
             : "",
         });
 
-      logger.log(`Successfully product updated ${productId} to Typesense`);
+      logger.info(`Successfully product updated ${productId} to Typesense`);
     } catch (error) {
-      logger.error(`Error adding product ${productId} to Typesense:`, error);
+      logger.info(`Error adding product ${productId} to Typesense:`, error);
+    }
+  });
+
+exports.syncDeletedProductFromTypesense = functions.firestore
+  .document("Products/{productId}")
+  .onDelete(async (snap, context) => {
+    const productId = context.params.productId;
+    try {
+      await client.collections("Products").documents(productId).delete();
+      logger.info(`Successfully deleted product ${productId} from Typesense`);
+    } catch (error) {
+      logger.error(
+        `Error deleting product ${productId} from Typesense:`,
+        error
+      );
     }
   });
 
