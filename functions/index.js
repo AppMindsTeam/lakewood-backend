@@ -24,12 +24,12 @@ const Typesense = require("typesense");
 const client = new Typesense.Client({
   nodes: [
     {
-      host: "n2zuwmjsilropd1xp-1.a1.typesense.net", // Replace with your Typesense server host
+      host: "hp2qibukc54rf6mwp-1.a1.typesense.net", // Replace with your Typesense server host
       port: 443, // Replace with your server port
       protocol: "https", // Use 'https' if using Typesense Cloud or a secured server
     },
   ],
-  apiKey: "7J6yMPeyWPSbPbR4q9tNtp3cgwi1fbc8", // Replace with your API key
+  apiKey: "HovJqVgL0kr6IU3c1iQXGDkTtalBh2w6", // Replace with your API key
   connectionTimeoutSeconds: 4,
 });
 
@@ -48,6 +48,7 @@ exports.syncNewProductToTypesense = functions.firestore
         .documents()
         .create({
           ...newProduct,
+          key: productId,
           id: productId,
           createdAt: newProduct.createdAt ? newProduct.createdAt.toDate() : "",
         });
@@ -72,7 +73,7 @@ exports.syncUpdatedProductToTypesense = functions.firestore
         .documents(productId)
         .update({
           ...updatedProduct,
-          id: productId,
+          key: productId,
           createdAt: updatedProduct.createdAt
             ? updatedProduct.createdAt.toDate()
             : "",
