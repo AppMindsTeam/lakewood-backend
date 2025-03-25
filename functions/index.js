@@ -24,12 +24,12 @@ const Typesense = require("typesense");
 const client = new Typesense.Client({
   nodes: [
     {
-      host: "hp2qibukc54rf6mwp-1.a1.typesense.net", // Replace with your Typesense server host
+      host: "tb3j850e7w6yi1dxp-1.a1.typesense.net", // Replace with your Typesense server host
       port: 443, // Replace with your server port
       protocol: "https", // Use 'https' if using Typesense Cloud or a secured server
     },
   ],
-  apiKey: "HovJqVgL0kr6IU3c1iQXGDkTtalBh2w6", // Replace with your API key
+  apiKey: "YDqSHMWPB5BwFQUcnZAFMDdSEWDNgMVX", // Replace with your API key
   connectionTimeoutSeconds: 4,
 });
 
