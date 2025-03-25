@@ -130,7 +130,8 @@ exports.sendNotification = functions.firestore
         recipientId: snapshot.data().recipientId,
         productId: snapshot.data().productId,
         screen: "ChatDetails",
-        badge: user.unreadNotifications || 0,
+        // badge: user.unreadNotifications || 0,
+        // badge: 0,
       };
     } else {
       recipientDetails = {};
@@ -155,7 +156,7 @@ exports.sendNotification = functions.firestore
         payload: {
           aps: {
             sound: "horn.wav",
-            badge: user.unreadNotifications || 0,
+            // badge: user.unreadNotifications || 0,
           },
         },
       },
@@ -167,7 +168,7 @@ exports.sendNotification = functions.firestore
         notification: {
           channel_id: "sound_channel",
           sound: "horn.wav",
-          notification_count: 20,
+          //notification_count: 0,
         },
       },
     };
